@@ -41,7 +41,7 @@ mergeable:
   # Pending issue https://github.com/mergeability/mergeable/issues/573
   - name: "Assign maintenance"
     when: pull_request.*, pull_request_review.*
-    # validate:
+    validate: []
     #   - do: changeset
     #     files:
     #       pr_diff: true # If true, validator will grab all the added and modified files in the head of the PR
