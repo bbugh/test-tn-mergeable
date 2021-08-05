@@ -41,26 +41,26 @@ mergeable:
   # Pending issue https://github.com/mergeability/mergeable/issues/573
   - name: "Assign maintenance"
     when: pull_request.*, pull_request_review.*
-    validate:
-      - do: changeset
-        files:
-          pr_diff: true # If true, validator will grab all the added and modified files in the head of the PR
-          # ignore: [".github/mergeable.yml"] # Optional, default ['.github/mergeable.yml'], pattern of files to ignore
-        must_include:
-          regex: "app.json"
-          # regex:
-          #   - "app.json"
-          #   - ".github/"
-          #   - "client-apps/nx.json"
-          #   - "client-apps/workspace.json"
-          #   - "tn-api/Dockerfile"
-          #   - "tn-api/docker-compose.yml"
-          #   - "tn-api/entrypoint.sh"
-          #   - "tn-api/config.ru"
-          #   - "tn-api/Procfile"
-          #   - "tn-api/.tool-versions"
-          #   - "tn-api/.ruby-version"
-          message: "It's a build"
+    # validate:
+    #   - do: changeset
+    #     files:
+    #       pr_diff: true # If true, validator will grab all the added and modified files in the head of the PR
+    #       # ignore: [".github/mergeable.yml"] # Optional, default ['.github/mergeable.yml'], pattern of files to ignore
+    #     must_include:
+    #       regex: "app.json"
+    #       # regex:
+    #       #   - "app.json"
+    #       #   - ".github/"
+    #       #   - "client-apps/nx.json"
+    #       #   - "client-apps/workspace.json"
+    #       #   - "tn-api/Dockerfile"
+    #       #   - "tn-api/docker-compose.yml"
+    #       #   - "tn-api/entrypoint.sh"
+    #       #   - "tn-api/config.ru"
+    #       #   - "tn-api/Procfile"
+    #       #   - "tn-api/.tool-versions"
+    #       #   - "tn-api/.ruby-version"
+    #       message: "It's a build"
     pass:
       - do: labels
         labels: "needs review"
