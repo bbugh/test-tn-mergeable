@@ -3,7 +3,21 @@ mergeable:
   # Pending issue https://github.com/mergeability/mergeable/issues/573
   - name: "Assign maintenance"
     when: pull_request.*, pull_request_review.*
-    validate: []
+    validate:
+      - do: changeset
+        must_include:
+          regex:
+            - "app.json"
+            - ".github\\/"
+            - "client-apps\\/nx\\.json"
+            - "client-apps\\/workspace\\.json"
+            - "tn-api\\/Dockerfile"
+            - "tn-api\\/docker-compose\\.yml"
+            - "tn-api\\/entrypoint\\.sh"
+            - "tn-api\\/config\\.ru"
+            - "tn-api\\/Procfile"
+            - "tn-api\\/\\.tool-versions"
+            - "tn-api\\/\\.ruby-version"
     pass:
       - do: comment
         payload:
