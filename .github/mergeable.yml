@@ -7,7 +7,6 @@ mergeable:
       - do: changeset
         must_include:
           regex:
-            - "app.json"
             - ".github\\/"
             - "client-apps\\/nx\\.json"
             - "client-apps\\/workspace\\.json"
@@ -21,4 +20,4 @@ mergeable:
     pass:
       - do: comment
         payload:
-          body: This is old. Is it still relevant? Do see this!
+          body: This is old. Is it still relevant? Don't see this!
