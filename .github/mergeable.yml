@@ -20,4 +20,4 @@ mergeable:
             - "tn-api\\/\\.ruby-version"
     pass:
       - do: labels
-        labels: "build"
+        labels: ["build"]
