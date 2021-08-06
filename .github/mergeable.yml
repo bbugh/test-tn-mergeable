@@ -7,8 +7,6 @@ mergeable:
       - do: changeset
         must_include:
           regex:
-            - ".github\\/"
-            - "client-apps\\/nx\\.json"
             - "client-apps\\/workspace\\.json"
             - "tn-api\\/Dockerfile"
             - "tn-api\\/docker-compose\\.yml"
