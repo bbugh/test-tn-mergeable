@@ -7,11 +7,11 @@ mergeable:
         must_include:
           regex: "^client-apps"
     pass:
-      - do: labels
+      - do: label
         add: "needs review"
         delete: "work in progress"
       - do: request_review
-        reviewers: ["table-needs/frontend"]
+        reviewers: ["@table-needs/frontend"]
 
   - name: "Assign backend"
     when: pull_request.*, pull_request_review.*
@@ -20,11 +20,11 @@ mergeable:
         must_include:
           regex: "^tn-api"
     pass:
-      - do: labels
+      - do: label
         add: "needs review"
         delete: "work in progress"
       - do: request_review
-        reviewers: ["table-needs/backend"]
+        reviewers: ["@table-needs/backend"]
 
   - name: "Assign platform"
     when: pull_request.*, pull_request_review.*
@@ -45,16 +45,16 @@ mergeable:
             - "tn-api\\/entrypoint\\.sh"
             - "webpack[^/]*?(js|ts)"
     pass:
-      - do: labels
+      - do: label
         add: "build"
         delete: "work in progress"
       - do: request_review
-        teams: ["table-needs/platform"]
+        teams: ["@table-needs/platform"]
 
   - name: "Assign QA"
     when: pull_request.*, pull_request_review.*
     validate:
-      - do: labels
+      - do: label
         must_include:
           regex: "needs review"
         must_exclude:
@@ -67,15 +67,15 @@ mergeable:
         block:
           changes_requested: true
     pass:
-      - do: labels
+      - do: label
         add: "needs qa"
         remove: "needs review"
       - do: request_review
-        reviewers: ["table-needs/qa"]
+        reviewers: ["@table-needs/qa"]
   # - name: "Automatically merge pull requests once it passes all checks"
   #   when: pull_request.*, pull_request_review.*, status.*, check_suite.*
   #   validate:
-  #     - do: labels
+  #     - do: label
   #       must_include:
   #         regex: "ready for merge"
   #     - do: approvals
@@ -83,7 +83,7 @@ mergeable:
   #         owners: true
   #         requested_reviewers: true
   #       limit:
-  #         teams: ["table-needs/qa"]
+  #         teams: ["@table-needs/qa"]
   #       block:
   #         changes_requested: true
   #   pass:
