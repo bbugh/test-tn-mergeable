@@ -7,7 +7,7 @@ mergeable:
         must_include:
           regex: "^client-apps"
     pass:
-      - do: label
+      - do: labels
         add: "needs review"
         delete: "work in progress"
       - do: request_review
@@ -20,7 +20,7 @@ mergeable:
         must_include:
           regex: "^tn-api"
     pass:
-      - do: label
+      - do: labels
         add: "needs review"
         delete: "work in progress"
       - do: request_review
@@ -45,7 +45,7 @@ mergeable:
             - "tn-api\\/entrypoint\\.sh"
             - "webpack[^/]*?(js|ts)"
     pass:
-      - do: label
+      - do: labels
         add: "build"
         delete: "work in progress"
       - do: request_review
@@ -67,7 +67,7 @@ mergeable:
         block:
           changes_requested: true
     pass:
-      - do: label
+      - do: labels
         add: "needs qa"
         remove: "needs review"
       - do: request_review
@@ -75,7 +75,7 @@ mergeable:
   # - name: "Automatically merge pull requests once it passes all checks"
   #   when: pull_request.*, pull_request_review.*, status.*, check_suite.*
   #   validate:
-  #     - do: label
+  #     - do: labels
   #       must_include:
   #         regex: "ready for merge"
   #     - do: approvals
