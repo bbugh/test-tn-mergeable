@@ -1,23 +1,91 @@
 version: 2
 mergeable:
-  # Pending issue https://github.com/mergeability/mergeable/issues/573
-  - name: "Assign maintenance"
+  - name: "Assign frontend"
+    when: pull_request.*, pull_request_review.*
+    validate:
+      - do: changeset
+        must_include:
+          regex: "^client-apps"
+    pass:
+      - do: labels
+        add: "needs review"
+        delete: "work in progress"
+      - do: request_review
+        reviewers: ["table-needs/frontend"]
+
+  - name: "Assign backend"
+    when: pull_request.*, pull_request_review.*
+    validate:
+      - do: changeset
+        must_include:
+          regex: "^tn-api"
+    pass:
+      - do: labels
+        add: "needs review"
+        delete: "work in progress"
+      - do: request_review
+        reviewers: ["table-needs/backend"]
+
+  - name: "Assign platform"
     when: pull_request.*, pull_request_review.*
     validate:
       - do: changeset
         must_include:
           regex:
+            - "\\.ruby-version"
+            - "\\.tool-versions"
+            - "^.github\\/"
             - "app.json"
-            - ".github\\/"
-            - "client-apps\\/nx\\.json"
             - "client-apps\\/workspace\\.json"
-            - "tn-api\\/Dockerfile"
-            - "tn-api\\/docker-compose\\.yml"
+            - "config\\.ru"
+            - "docker-compose\\.yml"
+            - "Dockerfile"
+            - "nx\\.json"
+            - "Procfile"
             - "tn-api\\/entrypoint\\.sh"
-            - "tn-api\\/config\\.ru"
-            - "tn-api\\/Procfile"
-            - "tn-api\\/\\.tool-versions"
-            - "tn-api\\/\\.ruby-version"
+            - "webpack[^/]*?(js|ts)"
     pass:
       - do: labels
-        labels: ["build"]
+        add: "build"
+        delete: "work in progress"
+      - do: request_review
+        teams: ["table-needs/platform"]
+
+  - name: "Assign QA"
+    when: pull_request.*, pull_request_review.*
+    validate:
+      - do: labels
+        must_include:
+          regex: "needs review"
+        must_exclude:
+          regex: "needs qa"
+      - do: approvals
+        min:
+          count: 1
+        required:
+          requested_reviewers: true
+        block:
+          changes_requested: true
+    pass:
+      - do: labels
+        add: "needs qa"
+        remove: "needs review"
+      - do: request_review
+        reviewers: ["table-needs/qa"]
+  # - name: "Automatically merge pull requests once it passes all checks"
+  #   when: pull_request.*, pull_request_review.*, status.*, check_suite.*
+  #   validate:
+  #     - do: labels
+  #       must_include:
+  #         regex: "ready for merge"
+  #     - do: approvals
+  #       required:
+  #         owners: true
+  #         requested_reviewers: true
+  #       limit:
+  #         teams: ["table-needs/qa"]
+  #       block:
+  #         changes_requested: true
+  #   pass:
+  #     - do: merge
+  #       merge_method: "squash"
