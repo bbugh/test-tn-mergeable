@@ -8,6 +8,7 @@ mergeable:
           draft:
             boolean:
               match: true
+    validate: []
     pass:
       - do: labels
         add: "draft"
