@@ -1,7 +1,30 @@
 version: 2
 mergeable:
+  - name: "Label based on draft status"
+    when: pull_request.*, pull_request_review.*
+    filter:
+      - do: payload
+        pull_request:
+          draft:
+            boolean:
+              match: true
+    pass:
+      - do: labels
+        add: "draft"
+        delete: "not draft"
+    fail:
+      - do: labels
+        add: "not draft"
+        delete: "draft"
+
   - name: "Assign frontend"
     when: pull_request.opened, pull_request.edited, pull_request.synchronized, pull_request_review.*
+    filter:
+      - do: payload
+        pull_request:
+          draft:
+            boolean:
+              match: false
     validate:
       - do: changeset
         must_include:
@@ -15,6 +38,12 @@ mergeable:
 
   - name: "Assign backend"
     when: pull_request.opened, pull_request.edited, pull_request.synchronized, pull_request_review.*
+    filter:
+      - do: payload
+        pull_request:
+          draft:
+            boolean:
+              match: false
     validate:
       - do: changeset
         must_include:
@@ -28,6 +57,12 @@ mergeable:
 
   - name: "Assign platform"
     when: pull_request.opened, pull_request.edited, pull_request.synchronized, pull_request_review.*
+    filter:
+      - do: payload
+        pull_request:
+          draft:
+            boolean:
+              match: false
     validate:
       - do: changeset
         must_include:
@@ -53,6 +88,12 @@ mergeable:
 
   - name: "Assign QA"
     when: pull_request.opened, pull_request.edited, pull_request.synchronized, pull_request_review.*
+    filter:
+      - do: payload
+        pull_request:
+          draft:
+            boolean:
+              match: false
     validate:
       - do: label
         must_include:
