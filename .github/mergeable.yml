@@ -1,18 +1,21 @@
 version: 2
 mergeable:
-  # - name: "Label draft"
-  #   when: pull_request.*, pull_request_review.*
-  #   filter:
-  #     - do: payload
-  #       pull_request:
-  #         draft:
-  #           boolean:
-  #             match: true
-  #   validate: []
-  #   pass:
-  #     - do: labels
-  #       add: "draft"
-  #       delete: "not draft"
+  - name: "Label draft"
+    when: pull_request.*, pull_request_review.*
+    filter:
+      - do: payload
+        pull_request:
+          draft:
+            boolean:
+              match: true
+    validate:
+      - do: label
+        must_include:
+          regex: "not draft"
+    pass:
+      - do: labels
+        add: "draft"
+        delete: "not draft"
 
   - name: "Label not draft"
     when: pull_request.*, pull_request_review.*
@@ -22,7 +25,10 @@ mergeable:
           draft:
             boolean:
               match: false
-    validate: []
+    validate:
+      - do: label
+        must_include:
+          regex: "^draft$"
     pass:
       - do: labels
         add: "not draft"
