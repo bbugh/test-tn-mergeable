@@ -1,108 +1,150 @@
 version: 2
 mergeable:
-  # - name: "Assign frontend"
+  # - name: "Label draft"
   #   when: pull_request.*, pull_request_review.*
+  #   filter:
+  #     - do: payload
+  #       pull_request:
+  #         draft:
+  #           boolean:
+  #             match: true
   #   validate:
-  #     - do: contents
-  #       files:
-  #         pr_diff: true # If true, validator will grab all the added and modified files in the head of the PR
-  #         # ignore: [".github/mergeable.yml"] # Optional, default ['.github/mergeable.yml'], pattern of files to ignore
-  #       begins_with:
-  #         match: "client-apps"
-  #         message: "Has client apps?"
+  #     - do: label
+  #       must_include:
+  #         regex: "not draft"
   #   pass:
   #     - do: labels
-  #       labels: "needs review"
-  #     - do: labels
-  #       labels: "work in progress"
-  #       mode: "delete"
-  #     - do: request_review
-  #       reviewers: ["@table-needs/frontend"]
+  #       add: "draft"
+  #       delete: "not draft"
 
-  # - name: "Assign backend"
+  # - name: "Label not draft"
   #   when: pull_request.*, pull_request_review.*
+  #   filter:
+  #     - do: payload
+  #       pull_request:
+  #         draft:
+  #           boolean:
+  #             match: false
   #   validate:
-  #     - do: contents
-  #       files:
-  #         pr_diff: true # If true, validator will grab all the added and modified files in the head of the PR
-  #         # ignore: [".github/mergeable.yml"] # Optional, default ['.github/mergeable.yml'], pattern of files to ignore
-  #       begins_with:
-  #         match: "tn-api"
-  #         message: "Has tn-api?"
+  #     - do: label
+  #       must_include:
+  #         regex: "^draft$"
   #   pass:
   #     - do: labels
-  #       labels: "needs review"
-  #     - do: labels
-  #       labels: "work in progress"
-  #       mode: "delete"
-  #     - do: request_review
-  #       reviewers: ["@table-needs/backend"]
+  #       add: "not draft"
+  #       delete: "draft"
 
-  # Pending issue https://github.com/mergeability/mergeable/issues/573
-  - name: "Assign maintenance"
+  - name: "Assign frontend"
+    # when: pull_request.opened, pull_request.edited, pull_request.synchronized, pull_request_review.*
     when: pull_request.*, pull_request_review.*
+    filter:
+      - do: payload
+        pull_request:
+          draft:
+            boolean:
+              match: false
     validate:
       - do: changeset
-        files:
-          pr_diff: true # If true, validator will grab all the added and modified files in the head of the PR
-          # ignore: [".github/mergeable.yml"] # Optional, default ['.github/mergeable.yml'], pattern of files to ignore
         must_include:
-          regex:
-            - "app.json"
-            - ".github\\/"
-            - "client-apps\\/nx\\.json"
-            - "client-apps\\/workspace\\.json"
-            - "tn-api\\/Dockerfile"
-            - "tn-api\\/docker-compose\\.yml"
-            - "tn-api\\/entrypoint\\.sh"
-            - "tn-api\\/config\\.ru"
-            - "tn-api\\/Procfile"
-            - "tn-api\\/\\.tool-versions"
-            - "tn-api\\/\\.ruby-version"
-          message: "It's a build"
+          regex: "^client-apps"
     pass:
       - do: labels
-        labels: "needs review"
-      - do: labels
-        labels: "work in progress"
-        mode: "delete"
+        add: "needs review"
+        delete: "work in progress"
       - do: request_review
-        reviewers: ["bbugh"] # FIXME: change to maintenance team
-
-  # - name: "Assign QA"
+        teams: ["frontend"]
+  # - name: "Assign backend"
+  #   # when: pull_request.opened, pull_request.edited, pull_request.synchronized, pull_request_review.*
   #   when: pull_request.*, pull_request_review.*
+  #   filter:
+  #     - do: payload
+  #       pull_request:
+  #         draft:
+  #           boolean:
+  #             match: false
   #   validate:
+  #     - do: changeset
+  #       must_include:
+  #         regex: "^tn-api"
+  #   pass:
   #     - do: labels
+  #       add: "needs review"
+  #       delete: "work in progress"
+  #     - do: request_review
+  #       reviewers: ["table-needs/backend"]
+  # - name: "Assign platform"
+  #   # when: pull_request.opened, pull_request.edited, pull_request.synchronized, pull_request_review.*
+  #   when: pull_request.*, pull_request_review.*
+  #   filter:
+  #     - do: payload
+  #       pull_request:
+  #         draft:
+  #           boolean:
+  #             match: false
+  #   validate:
+  #     - do: changeset
+  #       must_include:
+  #         regex:
+  #           - "\\.ruby-version"
+  #           - "\\.tool-versions"
+  #           - "^.github\\/"
+  #           - "app.json"
+  #           - "client-apps\\/workspace\\.json"
+  #           - "config\\.ru"
+  #           - "docker-compose\\.yml"
+  #           - "Dockerfile"
+  #           - "nx\\.json"
+  #           - "Procfile"
+  #           - "tn-api\\/entrypoint\\.sh"
+  #           - "webpack[^/]*?(js|ts)"
+  #   pass:
+  #     - do: labels
+  #       add: "build"
+  #       delete: "work in progress"
+  #     - do: request_review
+  #       teams: ["table-needs/platform"]
+  # - name: "Assign QA"
+  #   # when: pull_request.opened, pull_request.edited, pull_request.synchronized, pull_request_review.*
+  #   when: pull_request.*, pull_request_review.*
+  #   filter:
+  #     - do: payload
+  #       pull_request:
+  #         draft:
+  #           boolean:
+  #             match: false
+  #   validate:
+  #     - do: label
+  #       must_include:
+  #         regex: "needs review"
   #       must_exclude:
   #         regex: "needs qa"
   #     - do: approvals
   #       min:
   #         count: 1
   #       required:
-  #         owners: true
   #         requested_reviewers: true
   #       block:
   #         changes_requested: true
   #   pass:
   #     - do: labels
-  #       labels: "needs qa"
-  #     - do: labels
-  #       labels: "needs review"
-  #       mode: "delete"
-  # - name: "Automatically merge pull requests once it passes all checks"
-  #   when: pull_request.*, pull_request_review.*, status.*, check_suite.*
-  #   validate:
-  #     - do: labels
-  #       must_include:
-  #         regex: "ready for merge"
-  #     - do: approvals
-  #       required:
-  #         owners: true
-  #         requested_reviewers: true
-  #       limit:
-  #         teams: ["@table-needs/qa"]
-  #       block:
-  #         changes_requested: true
-  #   pass:
-  #     - do: merge
-  #       merge_method: "squash"
+  #       add: "needs qa"
+  #       remove: "needs review"
+  #     - do: request_review
+  #       reviewers: ["table-needs/qa"]
+  # # - name: "Automatically merge pull requests once it passes all checks"
+  # #   when: pull_request.*, pull_request_review.*, status.*, check_suite.*
+  # #   validate:
+  # #     - do: labels
+  # #       must_include:
+  # #         regex: "ready for merge"
+  # #     - do: approvals
+  # #       required:
+  # #         owners: true
+  # #         requested_reviewers: true
+  # #       limit:
+  # #         teams: ["table-needs/qa"]
+  # #       block:
+  # #         changes_requested: true
+  # #   pass:
+  # #     - do: merge
+  # #       merge_method: "squash"
